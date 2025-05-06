@@ -1,10 +1,113 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Monitoring Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <meta http-equiv="refresh" content="600"> <!-- Backup full page refresh every 10 minutes -->
 </head>
 <body>
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>Server Monitoring Dashboard</h1>
+        <div class="dashboard-actions">
+            <button id="refreshData" class="btn btn-primary">Refresh Data</button>
+            <button id="addServerBtn" class="btn btn-success">Manage Servers</button>
+        </div>
+    </div>
 
+    <div class="metrics-container">
+        <!-- Disk Space Metrics Section -->
+        <div id="diskMetricsSection" class="metric-section">
+            <h2>Disk Space Utilization</h2>
+            <table class="metric-table">
+                <thead>
+                <tr>
+                    <th>Server IP</th>
+                    <th>Server Name</th>
+                    <th>Drive</th>
+                    <th>Total GB</th>
+                    <th>Used GB</th>
+                    <th>Free GB</th>
+                    <th>Used %</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="metric : ${diskMetrics}">
+                    <td th:text="${metric.server.ipAddress}"></td>
+                    <td th:text="${metric.server.name}"></td>
+                    <td th:text="${metric.drive}"></td>
+                    <td th:text="${#numbers.formatDecimal(metric.totalSpaceGB, 1, 2)}"></td>
+                    <td th:text="${#numbers.formatDecimal(metric.usedSpaceGB, 1, 2)}"></td>
+                    <td th:text="${#numbers.formatDecimal(metric.freeSpaceGB, 1, 2)}"></td>
+                    <td th:text="${#numbers.formatDecimal(metric.usedPercentage, 1, 2) + '%'}"></td>
+                    <td>
+                                <span th:class="${
+                                    metric.usedPercentage < 70 ? 'status-green' :
+                                    metric.usedPercentage < 80 ? 'status-yellow' :
+                                    metric.usedPercentage < 86 ? 'status-orange' : 'status-red'
+                                }" th:text="${
+                                    metric.usedPercentage < 70 ? 'Normal' :
+                                    metric.usedPercentage < 80 ? 'Warning' :
+                                    metric.usedPercentage < 86 ? 'Critical' : 'Severe'
+                                }"></span>
+                    </td>
+                </tr>
+                <tr th:if="${diskMetrics.isEmpty()}">
+                    <td colspan="8" style="text-align: center;">No disk metrics available. Please add servers first.</td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="last-updated">Last updated: Processing...</div>
+        </div>
+
+        <!-- Memory Metrics Section -->
+        <div id="memoryMetricsSection" class="metric-section">
+            <h2>Memory Utilization</h2>
+            <table class="metric-table">
+                <thead>
+                <tr>
+                    <th>Server IP</th>
+                    <th>Server Name</th>
+                    <th>Total Memory (GB)</th>
+                    <th>Used Memory (GB)</th>
+                    <th>Free Memory (GB)</th>
+                    <th>Used %</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="metric : ${memoryMetrics}">
+                    <td th:text="${metric.server.ipAddress}"></td>
+                    <td th:text="${metric.server.name}"></td>
+                    <td th:text="${#numbers.formatDecimal(metric.totalMemoryGB, 1, 2)}"></td>
+                    <td th:text="${#numbers.formatDecimal(metric.usedMemoryGB, 1, 2)}"></td>
+                    <td th:text="${#numbers.formatDecimal(metric.freeMemoryGB, 1, 2)}"></td>
+                    <td th:text="${#numbers.formatDecimal(metric.usedPercentage, 1, 2) + '%'}"></td>
+                    <td>
+                                <span th:class="${
+                                    metric.usedPercentage < 40 ? 'status-green' :
+                                    metric.usedPercentage < 51 ? 'status-yellow' :
+                                    metric.usedPercentage < 61 ? 'status-orange' : 'status-red'
+                                }" th:text="${
+                                    metric.usedPercentage < 40 ? 'Normal' :
+                                    metric.usedPercentage < 51 ? 'Warning' :
+                                    metric.usedPercentage < 61 ? 'Critical' : 'Severe'
+                                }"></span>
+                    </td>
+                </tr>
+                <tr th:if="${memoryMetrics.isEmpty()}">
+                    <td colspan="7" style="text-align: center;">No memory metrics available. Please add servers first.</td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="last-updated">Last updated: Processing...</div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/dashboard.js}"></script>
 </body>
 </html>
