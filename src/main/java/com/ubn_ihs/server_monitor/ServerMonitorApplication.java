@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ServerMonitorApplication {
+public class AAServerMonitorApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ServerMonitorApplication.class, args);
+		SpringApplication.run(AAServerMonitorApplication.class, args);
 	}
 
 }
